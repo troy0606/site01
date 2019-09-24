@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="" name="form1" enctype="multipart/form-data">
+        <input type="file" id="file_loader" name="avatar[]" multiple>
+        <img src="" alt="">
+        <button id="submiter">Click</button>
+    </form>
+    <div id="show"></div>
+    <script src="./lib/jquery-3.4.1.js"></script>
+    <script>
+        $("#submiter").click(function (e) {
+            e.preventDefault();
+            let fd = new FormData(document.form1);
+            // let fileLoad = $("#file_loader")[0].files[0];
+            // fileLoad = JSON.stringify(fileLoad);
+            // console.log(fileLoad);
+            console.log(fd);
+            fetch("/uploads_img", {
+                // 使用src/index.js做為根目錄
+                method: "POST",
+                body: fd,
+            }).then(res => {
+                return res.json();
+            }).then(obj => {
+                console.log(obj);
+                let picArray;
+                obj.forEach(pic => {
+                    picArray+=`<img src="/img/${pic}" width="200px"></img><br>`
+                });
+                $("#show").append(picArray);
+            })
+        })
+    </script>
+</body>
+</html>

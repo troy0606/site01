@@ -13,12 +13,12 @@ const app2 = express();
 // const urlencodedParser = bodyParser.urlencoded({extended: false});
 
 const multer = require('multer');
-const upload = multer({dest:'tmp_uploads/'});
+const upload = multer({ dest: 'tmp_uploads/' });
 
 const fs = require('fs');
 
 
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 // 路由設定只要使用get以外的方法就執行bodyParser
 // get 資料在header
 
@@ -80,14 +80,14 @@ app.get('/try', (req, res) => {
 app.get('/tryPost', (req, res) => {
     res.render('try-post-form');
 });
-app.post('/tryPost',(req, res) => {
+app.post('/tryPost', (req, res) => {
     // res.send(JSON.stringify(req.body));
     // urlencodedParser 
 
-    res.render('try-post-form',req.body);
+    res.render('try-post-form', req.body);
 });
 
-app.get('/tryPost/123', (req, res)=>{
+app.get('/tryPost/123', (req, res) => {
     res.render('try-post-form');
 });
 
@@ -97,11 +97,11 @@ app.get('/tryPost2', (req, res) => {
     res.send('get : send response by get');
 });
 
-app.post('/tryPost2',(req, res) => {
+app.post('/tryPost2', (req, res) => {
     res.json(req.body);
 });
 
-app.put('/tryPost2',(req, res) => {
+app.put('/tryPost2', (req, res) => {
     res.send('put : send response by put');
 });
 // --test different way end
@@ -126,35 +126,63 @@ app2.get('/', (req, res) => {
     res.send("Hiiiii");
 });
 
-app.post('/try-uploads',upload.single('avatar'),(req,res)=>{
+app.post('/try-uploads', upload.single('avatar'), (req, res) => {
     // middleware :upload.single 處理avatar欄位資訊放入req.file屬性
     // console.log(req.file);
     // res.send('ok');
 
-    if(req.file && req.file.originalname){
+    if (req.file && req.file.originalname) {
         console.log(req.file);
 
-        switch(req.file.mimetype){
+        switch (req.file.mimetype) {
             case 'image/png':
             case 'image/jpeg':
 
-            // createReadStream建立串流
-            fs.createReadStream(req.file.path)
-            .pipe(
-                // 將來源內容倒到另一個地方
-                fs.createWriteStream('public/img/'+req.file.originalname)
-                // (pipe)參數不要+分號
-            );
-            res.send('ok');
-            break;
+                // createReadStream建立串流
+                fs.createReadStream(req.file.path)
+                    .pipe(
+                        // 將來源內容倒到另一個地方
+                        fs.createWriteStream('public/img/' + req.file.originalname)
+                        // (pipe)參數不要+分號
+                    );
+                res.send('ok');
+                break;
             default:
                 return res.send('bad file type');
         }
-    }else{
+    } else {
         res.send('no uploads');
     }
 
 });
+
+app.post('/uploads_img', upload.array('avatar[]', 6), (req, res) => {
+    let pic_array = [];
+    console.log(req.files);
+    for (i = 0; i < req.files.length; i++) {
+        if (req.files[i] && req.files[i].originalname) {
+            switch (req.files[i].mimetype) {
+                case 'image/png':
+                case 'image/jpeg':
+                    fs.createReadStream(req.files[i].path)
+                        .pipe(
+                            // 將來源內容倒到另一個地方
+                            fs.createWriteStream('public/img/' + req.files[i].originalname)
+                        );
+                    pic_array.push(req.files[i].originalname)
+                    break;
+                default:
+                    return res.send('bad file type');
+            }
+        } else {
+            res.send('no uploads');
+        }
+    };
+    console.log(pic_array);
+    res.json(pic_array);
+});
+
+
 // 放在所有路由設定後面，如果上面路由設定沒跑，則跑到這
 app.use((req, res) => {
     // res.type('text/plain');
