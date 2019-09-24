@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="info"></div>
+    <button>Click</button>
+    <script src="./lib/jquery-3.4.1.js"></script>
+    <script>
+        $("button").click(function () {
+            let obj = {
+                name: "Benson",
+                email: "Benson@gmail.com"
+            };
+
+            obj = JSON.stringify(obj);
+            fetch("/tryPost2", {
+                // 使用src/index.js做為根目錄
+                method: "POST",
+                body: obj,
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }).then(res=>{
+                return res.json();
+                // 將json轉換類型是promise的物件
+
+                // return res.text();
+                // 將json直接轉換成字串
+            }).then(obj=>{
+                $("#info").text(JSON.stringify(obj));
+                // $("#info").text(obj);
+            })
+        })
+    </script>
+</body>
+
+</html>

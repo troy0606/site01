@@ -1,0 +1,22 @@
+<%- include('parts/htmlHead')%>
+<%- include('parts/navbar')%>
+<!-- views為template的根目錄 -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">姓名</th>
+                <th scope="col">年齡</th>
+                <th scope="col">員工編號</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let a of sales){ %>
+            <tr>
+                <td><%= a.name %></td>
+                <td><%= a.age %></td>
+                <td><%= a.id %></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <%- include('parts/htmlFoot')%>

@@ -1,0 +1,6 @@
+安裝nodemon 會在每次修改目標檔案時重新啟動專案
+
+在package.json新增
+屬性script "start": "nodemon src/index.js",
+
+執行 npm start (不用npm run ........)
