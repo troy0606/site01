@@ -126,6 +126,7 @@ app2.get('/', (req, res) => {
     res.send("Hiiiii");
 });
 
+// -- pic uploads
 app.post('/try-uploads', upload.single('avatar'), (req, res) => {
     // middleware :upload.single 處理avatar欄位資訊放入req.file屬性
     // console.log(req.file);
@@ -155,7 +156,9 @@ app.post('/try-uploads', upload.single('avatar'), (req, res) => {
     }
 
 });
+// -- pic uploads end
 
+// --multiple pic uploads
 app.post('/uploads_img', upload.array('avatar[]', 6), (req, res) => {
     let pic_array = [];
     console.log(req.files);
@@ -181,7 +184,42 @@ app.post('/uploads_img', upload.array('avatar[]', 6), (req, res) => {
     console.log(pic_array);
     res.json(pic_array);
 });
+// --multiple pic uploads end
 
+const admin1 = require(__dirname + '/admins/admin1');
+admin1(app);
+
+const admin2Router = require(__dirname + '/admins/admin2');
+app.use(admin2Router);
+// 當作middeleware使用
+
+const admin3Router = require(__dirname + '/admins/admin3');
+app.use('/admins3',admin3Router);
+
+// --使用變數代數名稱設定路由
+app.get('/my-params1/:action/:id',(req,res)=>{
+    res.json(req.params);
+});
+
+app.get("/my-params2/:action?/:id?",(req,res)=>{
+    // ?選擇性的可有可無
+    res.json(req.params);
+});
+
+app.get("/my-params3/*?/*",(req,res)=>{
+    // *會回傳承索引式
+    res.json(req.params);
+});
+// --使用變數代數名稱設定路由 end
+
+
+app.get(/^\/09\d{2}\-?\d{3}\-?\d{3}$/,(req,res) =>{
+    let str = req.url.slice(1);
+    str = str.split("?")[0];
+    // 用?來切 取得陣列 
+    str = str.split("-").join("");
+    res.send("手機:"+str);
+});
 
 // 放在所有路由設定後面，如果上面路由設定沒跑，則跑到這
 app.use((req, res) => {
