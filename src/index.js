@@ -17,6 +17,8 @@ const upload = multer({ dest: 'tmp_uploads/' });
 
 const fs = require('fs');
 
+const moment = require('moment');
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // 路由設定只要使用get以外的方法就執行bodyParser
@@ -226,21 +228,18 @@ let db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "root",
-    database: "ingredient"
+    database: "my_test"
 });
 
 db.connect();
 app.get("/sales3", (req, res) => {
-    let sql = "SELECT * FROM `my_test`";
-    db.query(sql, (error, results, fields) => {
+    let sql = "SELECT * FROM `address_book`";
+    db.query(sql, (error, results) => {
         if (error) throw error;
-        console.log(result, fields);
         for (let v of results) {
             v.birthday = moment(v.birthday).format('YYYY-MM-DD');
         }
-        res.render('sales3', {
-            sales: results
-        })
+        res.json(results);
     })
 })
 
