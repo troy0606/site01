@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        font-size: 50px;
+    }
+</style>
+<body>
+
+    <div>
+        <a href="#a">a</a>
+        <a href="#b">b</a>
+        <a href="#c">c</a>
+    </div>
+
+    <div id="a">1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+    <div>1</div>
+
+    <div id="b">2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+    <div>2</div>
+
+    <div id="c">3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+    <div>3</div>
+
+    <script>
+        window.addEventListener('hashchange',function(e){
+            e.preventDefault();
+            // 不會發到history紀錄
+            console.log(location.hash);
+        })
+    </script>
+</body>
+
+</html>
