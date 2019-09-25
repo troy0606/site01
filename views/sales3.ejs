@@ -1,0 +1,20 @@
+<div class="row">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>Birthday</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let v of sales) { %>
+            <tr>
+                <td><%= v.name %></td>
+                <td><%= v.email %></td>
+                <td><%= v.mobile %></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
