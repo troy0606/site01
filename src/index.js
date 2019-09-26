@@ -30,7 +30,7 @@ const moment = require('moment-timezone');
 //     database: "my_test"
 // });
 
-const db = require('./connect');
+const db = require('C:/Users/connectDB/connect');
 db.connect();
 // --connect db end--
 
