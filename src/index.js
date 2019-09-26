@@ -21,7 +21,19 @@ const session = require('express-session');
 
 const moment = require('moment-timezone');
 
-// const mysql = require("mysql");
+// --connect db--
+// let mysql = require("mysql");
+// let db = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "root",
+//     database: "my_test"
+// });
+
+const db = require('./connect');
+db.connect();
+// --connect db end--
+
 // --require end--
 
 //--top level middleware--
@@ -41,10 +53,10 @@ app.set("view engine", 'ejs');
 
 app.use(session({
     saveUninitialized: false,
-    resave:false,
+    resave: false,
     secret: 'blowFish',
-    cookie:{
-        maxAge:1200000,
+    cookie: {
+        maxAge: 1200000,
     }
 }));
 
@@ -243,53 +255,49 @@ app.get(/^\/09\d{2}\-?\d{3}\-?\d{3}$/, (req, res) => {
 // --使用變數代數名稱設定路由 end
 
 //  --session settings--
-app.get('/try_session',(req,res)=>{
+app.get('/try_session', (req, res) => {
     req.session.views = req.session.views || 0;
     req.session.views++;
     res.contentType('application/json');
     res.json({
         name: "req.session",
-        views : req.session.views
+        views: req.session.views
     })
 })
 
 //  --session settings end--
 
-app.get("/try-moment",(req,res)=>{
+app.get("/try-moment", (req, res) => {
     const myFormat = 'YYYY-MM-DD HH:mm:ss';
     const exp = moment(req.session.cookie.expires);
     const mo1 = moment(exp);
     const mo2 = moment(new Date());
     res.contentType('text/plain');
-    res.write("台北" + mo1.myFormat+"\n");
-    res.write("倫敦" + mo1.tz("Europe/London").format(myFormat)+"\n");
-    res.write("東京" + mo2.tz("Asia/Tokyo").format(myFormat)+"\n");
+    res.write("台北" + mo1.myFormat + "\n");
+    res.write("倫敦" + mo1.tz("Europe/London").format(myFormat) + "\n");
+    res.write("東京" + mo2.tz("Asia/Tokyo").format(myFormat) + "\n");
     res.end(JSON.stringify(req.session));
 })
 
-// --connect db--
-// let mysql = require("mysql");
-// let db = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "root",
-//     database: "my_test"
-// });
-
-const db = require('./connect');
-db.connect();
-
+// --connect-db Read-- 
 app.get("/sales3", (req, res) => {
-    let sql = "SELECT * FROM `address_book`";
-    db.query(sql, (error, results) => {
+    const sql = "SELECT * FROM `address_book` LIMIT 10";
+    db.query(sql, (error, results,fields) => {
         if (error) throw error;
+        console.log(results,fields);
         for (let v of results) {
-            v.birthday = moment(v.birthday).format('YYYY-MM-DD');
+            v.birthday2 = moment(v.birthday).format('YYYY-MM-DD');
         }
-        res.json(results);
+        // 一個個轉換成moment的時間格式,塞到另一個屬性
+        // res.json(results);
+        res.render("try-db",{
+            rows:results
+        });
     })
+    // res.send('ok');
+    // 會先跑，因為跑裡面的callback function 需要時間(只會跑一個/send()/json()/end())
 })
-// --connect db end--
+// --connect-db Read end-- 
 
 
 // 放在所有路由設定後面，沒有設定路由(所有路由都會跑到))，如果上面路由設定沒跑，則跑到這
