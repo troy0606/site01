@@ -1,5 +1,5 @@
+// --require--
 const express = require('express');
-
 
 const url = require('url');
 
@@ -17,8 +17,18 @@ const upload = multer({ dest: 'tmp_uploads/' });
 
 const fs = require('fs');
 
+const session = require('express-session');
+
 const moment = require('moment');
 
+// --require end--
+
+//--top level middleware--
+app.use(express.static('public'));
+// 靜態網頁內容須放在路由設定前
+// public 資料夾為所有網頁根目錄
+
+// routes 路由(可定義多個/但要用不同的port)
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // 路由設定只要使用get以外的方法就執行bodyParser
@@ -27,6 +37,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.set("view engine", 'ejs');
+
+app.use(session({
+    saveUninitialized: false,
+    resave:false,
+    secret: 'blowFish',
+    cookie:{
+        maxAge:1200000,
+    }
+}));
+
+//--top level middleware end--
 
 app.get('/', (req, res) => {
 
@@ -38,12 +59,6 @@ app.get('/b.html', (req, res) => {
     // 動態產生b.html 內容
 });
 
-
-app.use(express.static('public'));
-// 靜態網頁內容須放在路由設定前
-// public 資料夾為所有網頁根目錄
-
-// routes 路由(可定義多個/但要用不同的port)
 
 app.get('/abc', (req, res) => {
     // 只允許檔案用get方式拜訪
@@ -188,6 +203,7 @@ app.post('/uploads_img', upload.array('avatar[]', 6), (req, res) => {
 });
 // --multiple pic uploads end
 
+// --module require--
 const admin1 = require(__dirname + '/admins/admin1');
 admin1(app);
 
@@ -197,6 +213,8 @@ app.use(admin2Router);
 
 const admin3Router = require(__dirname + '/admins/admin3');
 app.use('/admins3', admin3Router);
+
+// --module require end--
 
 // --使用變數代數名稱設定路由
 app.get('/my-params1/:action/:id', (req, res) => {
@@ -212,8 +230,6 @@ app.get("/my-params3/*?/*", (req, res) => {
     // *會回傳承索引式
     res.json(req.params);
 });
-// --使用變數代數名稱設定路由 end
-
 
 app.get(/^\/09\d{2}\-?\d{3}\-?\d{3}$/, (req, res) => {
     let str = req.url.slice(1);
@@ -222,6 +238,8 @@ app.get(/^\/09\d{2}\-?\d{3}\-?\d{3}$/, (req, res) => {
     str = str.split("-").join("");
     res.send("手機:" + str);
 });
+
+// --使用變數代數名稱設定路由 end
 
 let mysql = require("mysql");
 let db = mysql.createConnection({
@@ -244,7 +262,7 @@ app.get("/sales3", (req, res) => {
 })
 
 
-// 放在所有路由設定後面，如果上面路由設定沒跑，則跑到這
+// 放在所有路由設定後面，沒有設定路由(所有路由都會跑到))，如果上面路由設定沒跑，則跑到這
 app.use((req, res) => {
     // res.type('text/plain');
     res.status(404);
