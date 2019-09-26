@@ -1,4 +1,4 @@
 node_modules
 tmp_uploads
 public/img
-connect.html
+src/connect.js

@@ -19,8 +19,9 @@ const fs = require('fs');
 
 const session = require('express-session');
 
-const moment = require('moment');
+const moment = require('moment-timezone');
 
+// const mysql = require("mysql");
 // --require end--
 
 //--top level middleware--
@@ -241,6 +242,7 @@ app.get(/^\/09\d{2}\-?\d{3}\-?\d{3}$/, (req, res) => {
 
 // --使用變數代數名稱設定路由 end
 
+//  --session settings--
 app.get('/try_session',(req,res)=>{
     req.session.views = req.session.views || 0;
     req.session.views++;
@@ -251,16 +253,32 @@ app.get('/try_session',(req,res)=>{
     })
 })
 
+//  --session settings end--
 
-let mysql = require("mysql");
-let db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "my_test"
-});
+app.get("/try-moment",(req,res)=>{
+    const myFormat = 'YYYY-MM-DD HH:mm:ss';
+    const exp = moment(req.session.cookie.expires);
+    const mo1 = moment(exp);
+    const mo2 = moment(new Date());
+    res.contentType('text/plain');
+    res.write("台北" + mo1.myFormat+"\n");
+    res.write("倫敦" + mo1.tz("Europe/London").format(myFormat)+"\n");
+    res.write("東京" + mo2.tz("Asia/Tokyo").format(myFormat)+"\n");
+    res.end(JSON.stringify(req.session));
+})
 
+// --connect db--
+// let mysql = require("mysql");
+// let db = mysql.createConnection({
+//     host: "localhost",
+//     user: "root",
+//     password: "root",
+//     database: "my_test"
+// });
+
+const db = require('./connect');
 db.connect();
+
 app.get("/sales3", (req, res) => {
     let sql = "SELECT * FROM `address_book`";
     db.query(sql, (error, results) => {
@@ -271,6 +289,7 @@ app.get("/sales3", (req, res) => {
         res.json(results);
     })
 })
+// --connect db end--
 
 
 // 放在所有路由設定後面，沒有設定路由(所有路由都會跑到))，如果上面路由設定沒跑，則跑到這
