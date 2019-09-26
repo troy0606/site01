@@ -241,6 +241,17 @@ app.get(/^\/09\d{2}\-?\d{3}\-?\d{3}$/, (req, res) => {
 
 // --使用變數代數名稱設定路由 end
 
+app.get('/try_session',(req,res)=>{
+    req.session.views = req.session.views || 0;
+    req.session.views++;
+    res.contentType('application/json');
+    res.json({
+        name: "req.session",
+        views : req.session.views
+    })
+})
+
+
 let mysql = require("mysql");
 let db = mysql.createConnection({
     host: "localhost",
