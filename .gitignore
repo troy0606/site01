@@ -1,3 +1,4 @@
-node_modules/
-tmp_uploads/
-public/img/
+node_modules
+tmp_uploads
+public/img
+connect.html
