@@ -29,9 +29,13 @@ db.connect();
 const bluebird = require('bluebird');
 bluebird.promisifyAll(db);
 
+const cors = require('cors');
+
 // --require end--
 
 //--top level middleware--
+app.use(cors());
+
 app.use(express.static('public'));
 // 靜態網頁內容須放在路由設定前
 // public 資料夾為所有網頁根目錄
