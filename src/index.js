@@ -26,9 +26,12 @@ const db = require('C:/Users/connectDB/connect');
 db.connect();
 // --connect db end--
 
+// --blueBird 讓server可以偽裝成client使用promise
 const bluebird = require('bluebird');
 bluebird.promisifyAll(db);
+// --blueBird end
 
+// --cors 讓不同Domain或port的網站可以向它發request
 const cors = require('cors');
 
 // --require end--
@@ -298,6 +301,7 @@ app.get("/tryDb_R", (req, res) => {
 })
 // --connect-db Read end-- 
 
+// --connect-db search-- 
 app.get("/tryDb_search", (req, res) => {
     const sql = "SELECT * FROM `address_book` WHERE `name` LIKE ?";
     db.query(sql, ['%王小華%'], (error, results, fields) => {
@@ -311,7 +315,9 @@ app.get("/tryDb_search", (req, res) => {
         });
     })
 })
+// --connect-db search end-- 
 
+// --connect-db page-- 
 app.get("/tryDb2/:page?", (req, res) => {
     let page = req.params.page || 1;
     let perPage = 5;
@@ -332,6 +338,7 @@ app.get("/tryDb2/:page?", (req, res) => {
             console.log(error);
         });
 })
+// --connect-db page end-- 
 
 app.get('try-bluebird', (req, res) => {
     const output = [];
@@ -347,6 +354,12 @@ app.get('try-bluebird', (req, res) => {
         .catch(error => {
             console.log('*** sql error ***:', error);
         })
+})
+
+app.get('/try-session2',(req,res)=>{
+    req.session.views = req.session.views || 0;
+    req.session.views ++;
+    res.json({views : req.session.views});
 })
 
 // 放在所有路由設定後面，沒有設定路由(所有路由都會跑到))，如果上面路由設定沒跑，則跑到這
