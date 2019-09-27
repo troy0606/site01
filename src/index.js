@@ -22,17 +22,12 @@ const session = require('express-session');
 const moment = require('moment-timezone');
 
 // --connect db--
-// let mysql = require("mysql");
-// let db = mysql.createConnection({
-//     host: "localhost",
-//     user: "root",
-//     password: "root",
-//     database: "my_test"
-// });
-
 const db = require('C:/Users/connectDB/connect');
 db.connect();
 // --connect db end--
+
+const bluebird = require('bluebird');
+bluebird.promisifyAll(db);
 
 // --require end--
 
@@ -280,18 +275,18 @@ app.get("/try-moment", (req, res) => {
 })
 
 // --connect-db Read-- 
-app.get("/sales3", (req, res) => {
+app.get("/tryDb_R", (req, res) => {
     const sql = "SELECT * FROM `address_book` LIMIT 10";
-    db.query(sql, (error, results,fields) => {
+    db.query(sql, (error, results, fields) => {
         if (error) throw error;
-        console.log(results,fields);
+        console.log(results, fields);
         for (let v of results) {
             v.birthday2 = moment(v.birthday).format('YYYY-MM-DD');
         }
         // 一個個轉換成moment的時間格式,塞到另一個屬性
         // res.json(results);
-        res.render("try-db",{
-            rows:results
+        res.render("try-db", {
+            rows: results
         });
     })
     // res.send('ok');
@@ -299,6 +294,56 @@ app.get("/sales3", (req, res) => {
 })
 // --connect-db Read end-- 
 
+app.get("/tryDb_search", (req, res) => {
+    const sql = "SELECT * FROM `address_book` WHERE `name` LIKE ?";
+    db.query(sql, ['%王小華%'], (error, results, fields) => {
+        // results 固定是fetchAll
+        if (error) throw error;
+        for (let v of results) {
+            v.birthday2 = moment(v.birthday).format('YYYY-MM-DD');
+        }
+        res.render("try-db", {
+            rows: results
+        });
+    })
+})
+
+app.get("/tryDb2/:page?", (req, res) => {
+    let page = req.params.page || 1;
+    let perPage = 5;
+    const output = {};
+    db.queryAsync("SELECT COUNT(1) total FROM address_book WHERE 1")
+        .then(results => {
+            output.total = results[0].total;
+            return db.queryAsync(`SELECT * FROM address_book LIMIT ${(page - 1) * perPage},${perPage}`);
+        })
+        .then(results => {
+            output.rows = results;
+            results.forEach(a => {
+                a.birthday = moment(a.birthday).format('YYYY-MM-DD');
+            });
+            res.json(output);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+})
+
+app.get('try-bluebird', (req, res) => {
+    const output = [];
+    db.queryAsync("SELECT * FROM address_book WHERE sid=?", [3])
+        .then(results => {
+            output.push(results[0]);
+            return db.queryAsync("SELECT * FROM address_book WHERE sid=?", [2]);
+        })
+        .then(results => {
+            output.push(results[0]);
+            res.json(output);
+        })
+        .catch(error => {
+            console.log('*** sql error ***:', error);
+        })
+})
 
 // 放在所有路由設定後面，沒有設定路由(所有路由都會跑到))，如果上面路由設定沒跑，則跑到這
 app.use((req, res) => {

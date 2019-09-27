@@ -17,6 +17,7 @@
     "@babel/preset-env": "^7.6.0"
   },
   "dependencies": {
+    "bluebird": "^3.5.5",
     "body-parser": "^1.19.0",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
