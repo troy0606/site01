@@ -22,8 +22,14 @@ const session = require('express-session');
 const moment = require('moment-timezone');
 
 // --connect db--
-const db = require('C:/Users/connectDB/connect');
-db.connect();
+const mysql = require("mysql");
+// const db = require('C:/Users/connect');
+// db.connect();
+
+let file = 'C:/connect.json';
+let db_Obj = JSON.parse(fs.readFileSync(file));
+console.log(db_Obj);
+let db = mysql.createConnection(db_Obj);
 // --connect db end--
 
 // --blueBird 讓server可以偽裝成client使用promise
@@ -37,7 +43,38 @@ const cors = require('cors');
 // --require end--
 
 //--top level middleware--
-app.use(cors());
+// app.use(cors());
+// 白名單
+const whitelist = ['http://localhost:5000',undefined,'http://localhost:8080','http://localhost:3000'];
+// 設定允許接收資料的port
+const corsOption = {
+    credentials: true,
+    origin:function(origin,callback){
+        // 參數origin會回傳字串
+        // 一定要設callback
+        console.log('origin'+ origin);
+        if(whitelist.indexOf(origin)>=0){
+            callback(null,true);
+            // 有在白名單內
+        }else{
+            // callback(new Error('Not allowed by cors'));
+            // 直接建立Error物件/會停server
+            callback(null,false);
+            // false不允許/不會停server
+            // 不允許是指不會設定"Access-Control-Allow-Origin/Access-Control-Allow-Credentials
+        }
+
+    }
+};
+app.use(cors(corsOption));
+// 不同server共用同個cookie
+
+// client發req到不同server拿html，但fetch只發port3000，
+// cookie會記錄哪個server設定的，放在client，每個port看到的都是同一個cookie
+
+// cookie的值相同會獲得相同的session
+// connect.sid=s%3AXyc4dUT_70H-Xv1wosPRGVtbqfmScJaZ.lT9gOrCJ1WZNWIBW3Fl5xeWD02cdkgLCmP9dEj9hlgg
+// connect.sid(cookie的名稱)) = cookie的值
 
 app.use(express.static('public'));
 // 靜態網頁內容須放在路由設定前
@@ -73,7 +110,6 @@ app.get('/b.html', (req, res) => {
     res.send("<style>h2{color:red}</style><h2>Hello</h2><br><button>Click</button><script>alert('Hi');</script>");
     // 動態產生b.html 內容
 });
-
 
 app.get('/abc', (req, res) => {
     // 只允許檔案用get方式拜訪
@@ -142,7 +178,6 @@ app.get('/sales02', (req, res) => {
     // 伺服器執行
     const sales = require('./../data/sales01');
     // 後端載入JSON
-
 
     res.render('sales01', {
         // render預設使用資料夾view中的檔案(可省略副檔名)，指定使用哪個template
@@ -340,6 +375,19 @@ app.get("/tryDb2/:page?", (req, res) => {
 })
 // --connect-db page end-- 
 
+//  --connect-db test
+app.get("/tryDb_ingredient", (req, res) => {
+    const sql = "SELECT * FROM `ingredient` WHERE `product_name` LIKE ?";
+    db.query(sql, ['%粉'], (error, results, fields) => {
+        // results 固定是fetchAll
+        if (error) throw error;
+        res.json(results);
+    })
+})
+
+// --connect-db test end
+
+// --connect-db Async query
 app.get('try-bluebird', (req, res) => {
     const output = [];
     db.queryAsync("SELECT * FROM address_book WHERE sid=?", [3])
@@ -355,11 +403,12 @@ app.get('try-bluebird', (req, res) => {
             console.log('*** sql error ***:', error);
         })
 })
+// --connect-db Async query end
 
-app.get('/try-session2',(req,res)=>{
+app.get('/try-session2', (req, res) => {
     req.session.views = req.session.views || 0;
-    req.session.views ++;
-    res.json({views : req.session.views});
+    req.session.views++;
+    res.json({ views: req.session.views });
 })
 
 // 放在所有路由設定後面，沒有設定路由(所有路由都會跑到))，如果上面路由設定沒跑，則跑到這
@@ -375,6 +424,6 @@ app.listen(3000, () => {
     console.log("server started at port:3000")
 })
 
-app2.listen(5000, () => {
-    console.log("server started at port:5000")
-})
+// app2.listen(5000, () => {
+//     console.log("server started at port:5000")
+// })

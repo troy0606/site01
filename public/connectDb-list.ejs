@@ -1,0 +1,74 @@
+<%- include('parts/htmlHead')%>
+<%- include('parts/navbar')%>
+<% if(locals.message) { %>
+<div style="margin-top:2rem;">
+    <nav class="navbar navbar-expand-lg">
+        <div class="collapse navbar-collapse justify-content-between align-items-center" id="navbarSupportedContent">
+            <nav style="width: 250px;">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button id="allDelete" type="submit" class="btn btn-outline-warning"
+                            style="width:100px;  margin-right:20px;">批量刪除</button>
+                    </li>
+                    <div id="statusSlide" class="invisible animated d-flex">
+                        <li class="nav-item">
+                            <button id='allOnSale' type="submit" class="btn btn-outline-warning"
+                                style="width:100px; margin-right:20px;">批量上架</button>
+                        </li>
+                        <li class="nav-item">
+                            <button id='allOffSale' type="submit" class="btn btn-outline-warning"
+                                style="width:100px; margin-right:20px;">批量下架</button>
+                        </li>
+                    </div>
+                </ul>
+            </nav>
+            <nav aria-label="Page navigation example" style="color: #15141A;">
+                <ul class="pagination" style="margin:0;" id="pageContainer">
+                </ul>
+            </nav>
+            <form class="form-inline">
+                <div class="form-group mx-sm-3 mb-2" style="margin:8px;">
+                    <label for="search" class="sr-only"></label>
+                    <input type="text" class="form-control" placeholder="請輸入商品編號" id="product_num">
+                </div>
+                <button id="form_search" type="submit" class="btn btn-outline-warning mb-2" style="margin:8px;"><i
+                        class="fas fa-search"></i> Search</button>
+            </form>
+        </div>
+    </nav>
+</div>
+<div style="margin-top:2rem;"></div>
+
+<h6 id="totalCount" style="color: #fff;">資料總筆數：<?= $totalRows ?></h6>
+
+<form method="post" id="all_form" enctype="application/x-www-form-urlencoded">
+    <table class="table table-hover table-dark" style="box-shadow: 0px 0px 80px #000000;">
+        <thead>
+            <tr>
+                <th scope="col"><input type="checkbox" onclick="checkAll()" id="check_all"><label for="check_all"
+                        style="margin:0;"><span></span></label>全選</th>
+                <th scope="col">品號</th>
+                <!-- <th scope="col">圖片</th> -->
+                <th scope="col">名稱</th>
+                <th scope="col">數量
+                    <a href="#" data-order="quantity-up"><i class="fas fa-long-arrow-alt-up"></i></a>
+                    <a href="#" data-order="quantity-down"><i class="fas fa-long-arrow-alt-down"></i></a>
+                </th>
+                <th scope="col">價格
+                    <a href="#" data-order="price-up"><i class="fas fa-long-arrow-alt-up"></i></a>
+                    <a href="#" data-order="price-down"><i class="fas fa-long-arrow-alt-down"></i></a>
+                </th>
+                <th scope="col">狀態</th>
+                <th scope="col">新增時間
+                    <a href="#" data-order="create-up"><i class="fas fa-long-arrow-alt-up"></i></a>
+                    <a href="#" data-order="create-down"><i class="fas fa-long-arrow-alt-down"></i></a>
+                </th>
+                <th scope="col">功能列表</th>
+            </tr>
+        </thead>
+        <tbody id=tdContainer>
+        </tbody>
+    </table>
+</form>
+
+<%- include('parts/htmlFoot')%>

@@ -1,0 +1,60 @@
+<%- include('parts/htmlHead')%>
+<%- include('parts/navbar')%>
+<% if(locals.message) { %>
+<div class="alert alert-<%= locals.message.type %>" role="alert">
+    <%= message.text %>
+</div>
+<% } %>
+<div class="container">
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="pic_name">picture</label>
+                <input type="text" class="form-control" id="pic_name" placeholder="pic_name" name="pic_name"
+                    value="<%=locals.body?locals.body.pic_name:''%>">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="product_name">product_name</label>
+                <input type="text" class="form-control" id="product_name" placeholder="product_name" name="product_name"
+                    value="<%=locals.body?body.product_name:''%>">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="primary_category">primary_category</label>
+            <input type="text" class="form-control" id="primary_category" placeholder="primary_category"
+                name="primary_category" value="<%=locals.body?body.primary_category:''%>">
+        </div>
+        <div class="form-group">
+            <label for="inputAddress2">minor_category</label>
+            <input type="text" class="form-control" id="minor_category" placeholder="minor_category"
+                name="minor_category" value="<%=locals.body?body.minor_category:''%>">
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="tag">tag</label>
+                <input type="text" class="form-control" id="tag" name="tag" value="<%=locals.body?body.tag:''%>">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="price">price</label>
+                <input type="text" class="form-control" id="price" name="price" value="<%=locals.body?body.price:''%>">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="quantity">quantity</label>
+                <input type="text" class="form-control" id="quantity" name="quantity"
+                    value="<%=locals.body?body.quantity:''%>">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="made_in">made_in</label>
+            <input type="text" class="form-control" id="made_in" name="made_in"
+                value="<%=locals.body?body.made_in:''%>">
+        </div>
+        <div class="form-group">
+            <label for="weight">weight</label>
+            <input type="text" class="form-control" id="weight" name="weight" value="<%=locals.body?body.weight:''%>">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+</div>
+
+<%- include('parts/htmlFoot')%>
